@@ -81,7 +81,7 @@ total output tokens — aggregated across every session log on disk.
 ### 2. Get the code
 
 ```powershell
-git clone https://github.com/<you>/claude-code-sessions
+git clone https://github.com/POSTTTT/claude-code-sessions
 cd claude-code-sessions
 ```
 

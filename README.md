@@ -4,9 +4,13 @@ A local web app for browsing, searching, and managing the Claude Code session
 logs that pile up under `~/.claude/projects/`. Everything runs on your
 machine. No data leaves your computer; no Anthropic API calls are made.
 
-![projects view](docs/preview-projects.png)
-![sessions in a project](docs/preview-sessions.png)
-![transcript viewer](docs/preview-transcript.png)
+<!--
+Preview screenshots — paste the GitHub-hosted URLs below.
+See bottom of file for how to get them.
+-->
+![projects view](PROJECTS_IMAGE_URL)
+![sessions in a project](SESSIONS_IMAGE_URL)
+![transcript viewer](TRANSCRIPT_IMAGE_URL)
 
 ---
 

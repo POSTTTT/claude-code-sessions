@@ -101,40 +101,58 @@ npm install
 > 2. Move the repo to a non-synced path (e.g. `C:\dev\claude-code-sessions`)
 >    and install there.
 
-### 4. Run the dev server
+### 4. Register the launcher (one time)
 
 ```powershell
-npm run dev
+npm link
 ```
 
-Open <http://localhost:3000>. That's it.
+This installs a global command called `claude-sessions` that points at this
+project's copy. You only need to do this once per machine. (Equivalent
+alternative: `npm install -g .` from the project folder.)
 
-### 5. Pointing at a different `.claude` directory (optional)
+### 5. Launch from anywhere
+
+```powershell
+claude-sessions
+```
+
+That's it — no `cd`, no `npm run`. Open the URL the server prints (defaults
+to <http://localhost:3000>).
+
+Flags:
+
+The browser opens automatically as soon as the server is ready. Pass
+`--no-open` to skip that.
+
+| Command                     | What it does                                            |
+| --------------------------- | ------------------------------------------------------- |
+| `claude-sessions`           | Start the **dev** server + auto-open browser (default)  |
+| `claude-sessions --prod`    | Start the **production** server (requires a prior build) |
+| `claude-sessions --build`   | Run `next build`, then start the production server      |
+| `claude-sessions --no-open` | Don't open the browser                                  |
+| `claude-sessions --help`    | Show the help and the project path                      |
+
+To stop the server: `Ctrl+C` in the terminal where it's running.
+
+### 6. Pointing at a different `.claude` directory (optional)
 
 By default the app reads from `<homedir>\.claude\projects\`. To point at a
 different location, set the `CLAUDE_HOME` environment variable before
-starting the dev server:
+starting the server:
 
 ```powershell
 $env:CLAUDE_HOME = "D:\backups\.claude"
-npm run dev
+claude-sessions
 ```
-
-### 6. Production build (optional)
-
-```powershell
-npm run build
-npm start
-```
-
-Same address — <http://localhost:3000>. Useful if you want the app warm and
-fast without dev-server overhead.
 
 ---
 
 ## Project layout
 
 ```
+bin/
+  claude-sessions.mjs               global launcher (npm bin)
 src/
   app/
     page.tsx                          projects list

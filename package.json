@@ -2,6 +2,9 @@
   "name": "claude-code-sessions",
   "version": "0.1.0",
   "private": true,
+  "bin": {
+    "claude-sessions": "./bin/claude-sessions.mjs"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

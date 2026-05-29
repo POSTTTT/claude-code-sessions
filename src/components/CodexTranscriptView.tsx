@@ -30,7 +30,7 @@ export function CodexTranscriptView({ entries }: { entries: CodexEntry[] }) {
 
   return (
     <div className="mt-4">
-      <div className="sticky top-[57px] z-20 -mx-6 mb-4 border-b border-white/10 bg-black/60 px-6 py-2 backdrop-blur">
+      <div className="sticky top-[148px] z-20 -mx-6 mb-4 border-b border-white/10 bg-black/60 px-6 py-2 backdrop-blur">
         <div className="inline-flex rounded-md border border-white/10 bg-white/[0.03] p-0.5 text-xs">
           {(["messages", "tools", "all"] as Filter[]).map((f) => (
             <button

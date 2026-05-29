@@ -92,7 +92,7 @@ export function TranscriptView({ entries }: { entries: TranscriptEntry[] }) {
 
   return (
     <div>
-      <div className="sticky top-14 z-10 mt-3 flex gap-1 rounded-lg border border-white/10 bg-black/60 p-1 backdrop-blur">
+      <div className="sticky top-[148px] z-10 mt-3 flex gap-1 rounded-lg border border-white/10 bg-black/60 p-1 backdrop-blur">
         {(["messages", "tools", "all"] as Filter[]).map((f) => (
           <button
             key={f}

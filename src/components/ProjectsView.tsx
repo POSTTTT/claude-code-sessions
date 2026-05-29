@@ -9,7 +9,17 @@ type View = "table" | "tree";
 
 const STORAGE_KEY = "projects-view";
 
-export function ProjectsView({ projects }: { projects: ProjectSummary[] }) {
+export function ProjectsView({
+  projects,
+  basePath = "/p",
+  deletePrefix = "project:",
+  emptyLabel = "No projects found in ~/.claude/projects",
+}: {
+  projects: ProjectSummary[];
+  basePath?: string;
+  deletePrefix?: string;
+  emptyLabel?: string;
+}) {
   const [view, setView] = useState<View>("table");
 
   useEffect(() => {
@@ -41,9 +51,19 @@ export function ProjectsView({ projects }: { projects: ProjectSummary[] }) {
         ))}
       </div>
       {view === "table" ? (
-        <ProjectsTable projects={projects} />
+        <ProjectsTable
+          projects={projects}
+          basePath={basePath}
+          deletePrefix={deletePrefix}
+          emptyLabel={emptyLabel}
+        />
       ) : (
-        <ProjectsTree projects={projects} />
+        <ProjectsTree
+          projects={projects}
+          basePath={basePath}
+          deletePrefix={deletePrefix}
+          emptyLabel={emptyLabel}
+        />
       )}
     </div>
   );

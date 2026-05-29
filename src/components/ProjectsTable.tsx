@@ -21,7 +21,17 @@ const DEFAULT_DIR: Record<SortKey, SortDir> = {
   age: "desc",
 };
 
-export function ProjectsTable({ projects }: { projects: ProjectSummary[] }) {
+export function ProjectsTable({
+  projects,
+  basePath = "/p",
+  deletePrefix = "project:",
+  emptyLabel = "No projects found in ~/.claude/projects",
+}: {
+  projects: ProjectSummary[];
+  basePath?: string;
+  deletePrefix?: string;
+  emptyLabel?: string;
+}) {
   const [sortKey, setSortKey] = useState<SortKey>("age");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
@@ -78,7 +88,7 @@ export function ProjectsTable({ projects }: { projects: ProjectSummary[] }) {
             <tr key={p.id} className="border-t border-white/5 hover:bg-white/5">
               <td className="px-4 py-3">
                 <Link
-                  href={`/p/${encodeURIComponent(p.id)}`}
+                  href={`${basePath}/${encodeURIComponent(p.id)}`}
                   className="font-mono text-xs text-sky-300 hover:underline"
                 >
                   {p.decodedPath}
@@ -105,7 +115,7 @@ export function ProjectsTable({ projects }: { projects: ProjectSummary[] }) {
               </td>
               <td className="px-4 py-3 text-right">
                 <DeleteButton
-                  target={`project:${p.id}`}
+                  target={`${deletePrefix}${p.id}`}
                   label="Delete"
                   confirm={`Permanently delete project "${p.decodedPath}" and all its sessions? This cannot be undone.`}
                 />
@@ -115,7 +125,7 @@ export function ProjectsTable({ projects }: { projects: ProjectSummary[] }) {
           {sorted.length === 0 && (
             <tr>
               <td colSpan={6} className="px-4 py-8 text-center text-white/50">
-                No projects found in ~/.claude/projects
+                {emptyLabel}
               </td>
             </tr>
           )}

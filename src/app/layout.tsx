@@ -16,11 +16,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen">
         <header className="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur">
-          <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-3">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3">
             <Link href="/" className="font-semibold tracking-tight">
-              Claude Sessions
+              Sessions
             </Link>
-            <nav className="flex gap-4 text-sm text-white/70">
+            <nav className="flex items-center gap-3 text-sm text-white/70">
+              <span className="text-[10px] uppercase tracking-wide text-white/30">
+                Claude
+              </span>
               <Link href="/" className="hover:text-white">
                 Projects
               </Link>
@@ -28,6 +31,21 @@ export default function RootLayout({
                 Search
               </Link>
               <Link href="/stats" className="hover:text-white">
+                Stats
+              </Link>
+            </nav>
+            <span className="h-4 w-px bg-white/10" />
+            <nav className="flex items-center gap-3 text-sm text-white/70">
+              <span className="text-[10px] uppercase tracking-wide text-white/30">
+                Codex
+              </span>
+              <Link href="/codex" className="hover:text-white">
+                Projects
+              </Link>
+              <Link href="/codex/search" className="hover:text-white">
+                Search
+              </Link>
+              <Link href="/codex/stats" className="hover:text-white">
                 Stats
               </Link>
             </nav>

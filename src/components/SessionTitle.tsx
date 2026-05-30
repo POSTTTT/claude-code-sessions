@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { renameSession } from "@/app/actions";
+import { renameSession, renameCodexSession } from "@/app/actions";
 
 export function SessionTitle({
   projectId,
@@ -11,12 +11,16 @@ export function SessionTitle({
   alias,
   aiTitle,
   firstUserPrompt,
+  basePath = "/p",
+  kind = "claude",
 }: {
   projectId: string;
   sessionId: string;
   alias: string | null;
   aiTitle?: string | null;
   firstUserPrompt: string | null;
+  basePath?: string;
+  kind?: "claude" | "codex";
 }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(alias ?? "");
@@ -32,11 +36,12 @@ export function SessionTitle({
       : firstUserPrompt
         ? "prompt"
         : "none";
-  const href = `/p/${encodeURIComponent(projectId)}/s/${sessionId}`;
+  const href = `${basePath}/${encodeURIComponent(projectId)}/s/${sessionId}`;
 
   const save = (next: string) => {
     start(async () => {
-      await renameSession(projectId, sessionId, next);
+      if (kind === "codex") await renameCodexSession(projectId, sessionId, next);
+      else await renameSession(projectId, sessionId, next);
       setEditing(false);
       router.refresh();
     });

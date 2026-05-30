@@ -1,8 +1,12 @@
 # claude-code-sessions
 
-A local web app for browsing, searching, and managing the Claude Code session
-logs that pile up under `~/.claude/projects/`. Everything runs on your
-machine. No data leaves your computer; no Anthropic API calls are made.
+A local web app for browsing, searching, and managing the session logs that
+pile up from your coding agents — both **Claude Code** (under
+`~/.claude/projects/`) and **Codex** (under `~/.codex/sessions/`). Everything
+runs on your machine. No data leaves your computer; no API calls are made.
+
+The header has two tabs — **Claude** and **Codex** — each with the same
+Projects / Search / Stats functionality.
 
 ---
 
@@ -67,6 +71,23 @@ total output tokens — aggregated across every session log on disk.
 - **Delete a session or whole project** — confirmation prompt first, then
   `fs.rm` with retries (handles transient Windows file locks from AV /
   OneDrive sync).
+
+### Codex tab (`/codex`)
+
+The **Codex** tab mirrors every feature above for OpenAI Codex sessions read
+from `~/.codex/sessions/`. A few format differences are handled transparently:
+
+- Codex stores sessions in a flat date tree
+  (`sessions/YYYY/MM/DD/rollout-*.jsonl`), not per-project folders, so sessions
+  are **grouped into projects by their real `cwd`** (read from each rollout's
+  `session_meta` line).
+- The transcript viewer understands Codex's event stream: user messages, agent
+  replies (markdown), collapsible reasoning, and `function_call` cards merged
+  with their output. Same **messages / tools / all** filter pills.
+- **Rename** is stored in a sidecar (`~/.codex/sessions/_codex_aliases.json`).
+  Codex has no `/resume` title to mirror into, so nothing is written back into
+  the rollout `.jsonl`.
+- Stats and search work the same, scoped to `~/.codex/sessions/`.
 
 ---
 
@@ -137,12 +158,14 @@ To stop the server: `Ctrl+C` in the terminal where it's running.
 
 ### 6. Pointing at a different `.claude` directory (optional)
 
-By default the app reads from `<homedir>\.claude\projects\`. To point at a
-different location, set the `CLAUDE_HOME` environment variable before
-starting the server:
+By default the app reads from `<homedir>\.claude\projects\` (Claude) and
+`<homedir>\.codex\sessions\` (Codex). To point at different locations, set the
+`CLAUDE_HOME` and/or `CODEX_HOME` environment variables before starting the
+server:
 
 ```powershell
 $env:CLAUDE_HOME = "D:\backups\.claude"
+$env:CODEX_HOME = "D:\backups\.codex"
 claude-sessions
 ```
 
@@ -155,25 +178,32 @@ bin/
   claude-sessions.mjs               global launcher (npm bin)
 src/
   app/
-    page.tsx                          projects list
+    page.tsx                          Claude projects list
     p/[projectId]/page.tsx            sessions in a project
     p/[projectId]/s/[sessionId]/      session transcript
     search/page.tsx                   content search
     stats/page.tsx                    summary tiles
-    actions.ts                        server actions (delete, rename)
-    layout.tsx, globals.css           sticky header + dark theme
+    codex/                            Codex tab — mirrors the routes above
+      page.tsx                        Codex projects (grouped by cwd)
+      p/[projectId]/page.tsx          sessions in a project
+      p/[projectId]/s/[sessionId]/    session transcript
+      search/page.tsx, stats/page.tsx search + stats
+    actions.ts                        server actions (delete, rename — both tabs)
+    layout.tsx, globals.css           sticky header (Claude + Codex) + dark theme
   components/
-    ProjectsView.tsx                  table/tree toggle (client)
+    ProjectsView.tsx                  table/tree toggle (client, basePath-aware)
     ProjectsTable.tsx                 sortable table (client)
     ProjectsTree.tsx                  directory tree (client)
-    SessionTitle.tsx                  inline rename (client)
+    SessionTitle.tsx                  inline rename (client, claude/codex)
     DeleteButton.tsx                  delete w/ confirm (client)
-    TranscriptView.tsx                transcript renderer + filters
+    TranscriptView.tsx                Claude transcript renderer + filters
+    CodexTranscriptView.tsx           Codex transcript renderer + filters
     Markdown.tsx                      lightweight markdown renderer
   lib/
-    paths.ts                          CLAUDE_HOME / PROJECTS_DIR + decode
-    sessions.ts                       list/read/search/delete + stats
-    aliases.ts                        rename sidecar + ai-title mirror
+    paths.ts                          CLAUDE_HOME / CODEX_HOME + id encode/decode
+    sessions.ts                       Claude: list/read/search/delete + stats
+    codex.ts                          Codex: list/read/search/delete + stats
+    aliases.ts                        Claude rename sidecar + ai-title mirror
     format.ts                         bytes / relative / duration / number
 ```
 

@@ -97,7 +97,17 @@ function collapse(n: Node): Node {
   return { ...n, children: newChildren };
 }
 
-export function ProjectsTree({ projects }: { projects: ProjectSummary[] }) {
+export function ProjectsTree({
+  projects,
+  basePath = "/p",
+  deletePrefix = "project:",
+  emptyLabel = "No projects found in ~/.claude/projects",
+}: {
+  projects: ProjectSummary[];
+  basePath?: string;
+  deletePrefix?: string;
+  emptyLabel?: string;
+}) {
   const tree = useMemo(() => collapse(buildTree(projects)), [projects]);
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => ({
     [""]: true,
@@ -125,11 +135,13 @@ export function ProjectsTree({ projects }: { projects: ProjectSummary[] }) {
               depth={0}
               expanded={expanded}
               onToggle={toggle}
+              basePath={basePath}
+              deletePrefix={deletePrefix}
             />
           ))}
         {tree.children.size === 0 && (
           <div className="px-4 py-8 text-center text-sm text-white/50">
-            No projects found in ~/.claude/projects
+            {emptyLabel}
           </div>
         )}
       </div>
@@ -150,11 +162,15 @@ function TreeRow({
   depth,
   expanded,
   onToggle,
+  basePath,
+  deletePrefix,
 }: {
   node: Node;
   depth: number;
   expanded: Record<string, boolean>;
   onToggle: (k: string) => void;
+  basePath: string;
+  deletePrefix: string;
 }) {
   const isOpen = expanded[node.fullPath];
   const indent = depth * 16;
@@ -166,7 +182,7 @@ function TreeRow({
         <div className="col-span-6 flex items-center" style={{ paddingLeft: indent }}>
           <span className="mr-2 text-white/30">📄</span>
           <Link
-            href={`/p/${encodeURIComponent(p.id)}`}
+            href={`${basePath}/${encodeURIComponent(p.id)}`}
             className="truncate font-mono text-xs text-sky-300 hover:underline"
           >
             {node.name}
@@ -186,7 +202,7 @@ function TreeRow({
         </div>
         <div className="col-span-1 text-right">
           <DeleteButton
-            target={`project:${p.id}`}
+            target={`${deletePrefix}${p.id}`}
             label="Delete"
             confirm={`Permanently delete project "${p.decodedPath}" and all its sessions? This cannot be undone.`}
           />
@@ -242,6 +258,8 @@ function TreeRow({
               depth={depth + 1}
               expanded={expanded}
               onToggle={onToggle}
+              basePath={basePath}
+              deletePrefix={deletePrefix}
             />
           ))}
     </>

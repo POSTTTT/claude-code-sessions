@@ -3,9 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { deleteSession, deleteProject } from "@/lib/sessions";
 import { setAlias } from "@/lib/aliases";
+import {
+  deleteCodexSession,
+  deleteCodexProject,
+  setCodexAlias,
+} from "@/lib/codex";
 
 export async function deleteTarget(target: string) {
-  if (target.startsWith("session:")) {
+  if (target.startsWith("codex-session:")) {
+    const rest = target.slice("codex-session:".length);
+    const idx = rest.lastIndexOf(":");
+    if (idx === -1) throw new Error("bad target");
+    const projectId = rest.slice(0, idx);
+    const sessionId = rest.slice(idx + 1);
+    await deleteCodexSession(sessionId);
+    revalidatePath(`/codex/p/${encodeURIComponent(projectId)}`);
+  } else if (target.startsWith("codex-project:")) {
+    const projectId = target.slice("codex-project:".length);
+    await deleteCodexProject(projectId);
+    revalidatePath("/codex");
+  } else if (target.startsWith("session:")) {
     const rest = target.slice("session:".length);
     const idx = rest.lastIndexOf(":");
     if (idx === -1) throw new Error("bad target");
@@ -30,4 +47,14 @@ export async function renameSession(
   await setAlias(projectId, sessionId, name);
   revalidatePath(`/p/${encodeURIComponent(projectId)}`);
   revalidatePath(`/p/${encodeURIComponent(projectId)}/s/${sessionId}`);
+}
+
+export async function renameCodexSession(
+  projectId: string,
+  sessionId: string,
+  name: string,
+) {
+  await setCodexAlias(sessionId, name);
+  revalidatePath(`/codex/p/${encodeURIComponent(projectId)}`);
+  revalidatePath(`/codex/p/${encodeURIComponent(projectId)}/s/${sessionId}`);
 }

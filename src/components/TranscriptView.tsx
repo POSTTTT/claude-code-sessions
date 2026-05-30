@@ -303,7 +303,9 @@ function EntryCard({
     <div className={`rounded-lg border ${tone} p-3`}>
       <div className="flex items-center justify-between text-xs text-white/50">
         <div className="flex items-center gap-2">
-          <span className="font-mono uppercase">{role}</span>
+          <span className="font-mono uppercase">
+            {role === "assistant" ? "claude" : role}
+          </span>
           {entry.model && (
             <span className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">
               {entry.model}

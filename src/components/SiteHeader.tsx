@@ -3,14 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type Tool = "claude" | "codex";
+type Tool = "claude" | "codex" | "gemini";
 type Section = "projects" | "search" | "stats";
 
 export function SiteHeader() {
   const pathname = usePathname() ?? "/";
-  const tool: Tool = pathname === "/codex" || pathname.startsWith("/codex/")
-    ? "codex"
-    : "claude";
+  const tool: Tool =
+    pathname === "/codex" || pathname.startsWith("/codex/")
+      ? "codex"
+      : pathname === "/gemini" || pathname.startsWith("/gemini/")
+        ? "gemini"
+        : "claude";
 
   const section: Section = pathname.includes("/search")
     ? "search"
@@ -18,7 +21,7 @@ export function SiteHeader() {
       ? "stats"
       : "projects";
 
-  const base = tool === "codex" ? "/codex" : "";
+  const base = tool === "claude" ? "" : `/${tool}`;
   const sub: { key: Section; label: string; href: string }[] = [
     { key: "projects", label: "Projects", href: `${base}/` || "/" },
     { key: "search", label: "Search", href: `${base}/search` },
@@ -58,6 +61,12 @@ export function SiteHeader() {
             active={tool === "codex"}
             icon={<BrandMark src="/codex-logo.png" alt="Codex" />}
             label="Codex"
+          />
+          <ToolTab
+            href="/gemini"
+            active={tool === "gemini"}
+            icon={<BrandMark src="/gemini-logo.png" alt="Gemini" />}
+            label="Gemini"
           />
         </div>
       </div>
@@ -165,3 +174,4 @@ function BrandMark({ src, alt }: { src: string; alt: string }) {
     />
   );
 }
+

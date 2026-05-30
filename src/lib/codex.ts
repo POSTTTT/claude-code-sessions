@@ -4,6 +4,7 @@ import readline from "node:readline";
 import path from "node:path";
 import { CODEX_SESSIONS_DIR, encodeId, decodeId } from "./paths";
 import type { ProjectSummary, SessionSummary } from "./sessions";
+import type { AgentEntry } from "./transcript";
 
 // ---------------------------------------------------------------------------
 // Codex stores every session as a JSONL "rollout" file under
@@ -34,21 +35,7 @@ type CodexMeta = {
   outputTokens: number;
 };
 
-export type CodexEntry = {
-  kind:
-    | "user"
-    | "agent"
-    | "reasoning"
-    | "tool_call"
-    | "tool_output"
-    | "meta"
-    | "raw";
-  text?: string;
-  toolName?: string;
-  callId?: string;
-  timestamp?: string;
-  raw: unknown;
-};
+export type CodexEntry = AgentEntry;
 
 async function safeStat(p: string) {
   try {

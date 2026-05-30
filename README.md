@@ -1,12 +1,13 @@
 # claude-code-sessions
 
 A local web app for browsing, searching, and managing the session logs that
-pile up from your coding agents — both **Claude Code** (under
-`~/.claude/projects/`) and **Codex** (under `~/.codex/sessions/`). Everything
-runs on your machine. No data leaves your computer; no API calls are made.
+pile up from your coding agents — **Claude Code** (`~/.claude/projects/`),
+**Codex** (`~/.codex/sessions/`), and **Gemini CLI** (`~/.gemini/tmp/`).
+Everything runs on your machine. No data leaves your computer; no API calls
+are made.
 
-The header has two tabs — **Claude** and **Codex** — each with the same
-Projects / Search / Stats functionality.
+The header has three tabs — **Claude**, **Codex**, and **Gemini** — each with
+the same Projects / Search / Stats functionality.
 
 ---
 
@@ -89,6 +90,24 @@ from `~/.codex/sessions/`. A few format differences are handled transparently:
   the rollout `.jsonl`.
 - Stats and search work the same, scoped to `~/.codex/sessions/`.
 
+### Gemini tab (`/gemini`)
+
+The **Gemini** tab does the same for Gemini CLI chats under `~/.gemini/tmp/`:
+
+- Gemini already stores one folder per project
+  (`tmp/<project>/chats/session-*.jsonl`), and `~/.gemini/projects.json` maps
+  each folder to its **real working directory** — which the app uses as the
+  project path.
+- Each chat log is an append journal (a header line, `$set` patches, then one
+  JSON object per message). The transcript viewer reconstructs the
+  conversation from it: user prompts, Gemini replies (markdown), collapsible
+  **thoughts** (reasoning), and `toolCalls` merged with their results.
+- **Context tokens** are reported instead of input tokens — Gemini records the
+  cumulative context size per turn, so the app shows the peak rather than a
+  misleading sum. Output tokens are summed normally.
+- **Rename** uses a sidecar (`~/.gemini/_gemini_aliases.json`); nothing is
+  written back into the chat log.
+
 ---
 
 ## Setup
@@ -158,14 +177,15 @@ To stop the server: `Ctrl+C` in the terminal where it's running.
 
 ### 6. Pointing at a different `.claude` directory (optional)
 
-By default the app reads from `<homedir>\.claude\projects\` (Claude) and
-`<homedir>\.codex\sessions\` (Codex). To point at different locations, set the
-`CLAUDE_HOME` and/or `CODEX_HOME` environment variables before starting the
-server:
+By default the app reads from `<homedir>\.claude\projects\` (Claude),
+`<homedir>\.codex\sessions\` (Codex), and `<homedir>\.gemini\tmp\` (Gemini).
+To point at different locations, set the `CLAUDE_HOME`, `CODEX_HOME`, and/or
+`GEMINI_HOME` environment variables before starting the server:
 
 ```powershell
 $env:CLAUDE_HOME = "D:\backups\.claude"
 $env:CODEX_HOME = "D:\backups\.codex"
+$env:GEMINI_HOME = "D:\backups\.gemini"
 claude-sessions
 ```
 
@@ -184,25 +204,29 @@ src/
     search/page.tsx                   content search
     stats/page.tsx                    summary tiles
     codex/                            Codex tab — mirrors the routes above
-      page.tsx                        Codex projects (grouped by cwd)
+    gemini/                           Gemini tab — mirrors the routes above
+      page.tsx                        projects (from ~/.gemini/projects.json)
       p/[projectId]/page.tsx          sessions in a project
       p/[projectId]/s/[sessionId]/    session transcript
       search/page.tsx, stats/page.tsx search + stats
-    actions.ts                        server actions (delete, rename — both tabs)
-    layout.tsx, globals.css           sticky header (Claude + Codex) + dark theme
+    actions.ts                        server actions (delete, rename — all tabs)
+    layout.tsx, globals.css           dark theme + <SiteHeader/>
   components/
+    SiteHeader.tsx                    3-tab header (Claude / Codex / Gemini)
     ProjectsView.tsx                  table/tree toggle (client, basePath-aware)
     ProjectsTable.tsx                 sortable table (client)
     ProjectsTree.tsx                  directory tree (client)
-    SessionTitle.tsx                  inline rename (client, claude/codex)
+    SessionTitle.tsx                  inline rename (claude/codex/gemini)
     DeleteButton.tsx                  delete w/ confirm (client)
     TranscriptView.tsx                Claude transcript renderer + filters
-    CodexTranscriptView.tsx           Codex transcript renderer + filters
+    AgentTranscriptView.tsx           shared Codex/Gemini transcript renderer
     Markdown.tsx                      lightweight markdown renderer
   lib/
-    paths.ts                          CLAUDE_HOME / CODEX_HOME + id encode/decode
+    paths.ts                          CLAUDE/CODEX/GEMINI_HOME + id encode/decode
     sessions.ts                       Claude: list/read/search/delete + stats
     codex.ts                          Codex: list/read/search/delete + stats
+    gemini.ts                         Gemini: list/read/search/delete + stats
+    transcript.ts                     shared AgentEntry type
     aliases.ts                        Claude rename sidecar + ai-title mirror
     format.ts                         bytes / relative / duration / number
 ```

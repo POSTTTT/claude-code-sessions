@@ -11,6 +11,14 @@ export const CODEX_HOME =
 
 export const CODEX_SESSIONS_DIR = path.join(CODEX_HOME, "sessions");
 
+export const GEMINI_HOME =
+  process.env.GEMINI_HOME ?? path.join(os.homedir(), ".gemini");
+
+/** Gemini CLI stores chats under ~/.gemini/tmp/<project>/chats/*.jsonl */
+export const GEMINI_TMP_DIR = path.join(GEMINI_HOME, "tmp");
+
+export const GEMINI_PROJECTS_JSON = path.join(GEMINI_HOME, "projects.json");
+
 /**
  * Codex stores sessions in a flat date tree, not per-project folders, so we
  * group them by their real `cwd`. We encode that path (and per-session file

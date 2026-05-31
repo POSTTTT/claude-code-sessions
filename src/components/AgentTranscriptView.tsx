@@ -1,12 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CodexEntry } from "@/lib/codex";
+import type { AgentEntry } from "@/lib/transcript";
 import { Markdown } from "./Markdown";
 
 type Filter = "all" | "messages" | "tools";
 
-export function CodexTranscriptView({ entries }: { entries: CodexEntry[] }) {
+export function AgentTranscriptView({
+  entries,
+  agentLabel = "Assistant",
+}: {
+  entries: AgentEntry[];
+  agentLabel?: string;
+}) {
   const [filter, setFilter] = useState<Filter>("messages");
 
   // Pair tool outputs to their calls by call_id so each tool call card can
@@ -54,6 +60,7 @@ export function CodexTranscriptView({ entries }: { entries: CodexEntry[] }) {
           <EntryCard
             key={i}
             entry={e}
+            agentLabel={agentLabel}
             output={e.kind === "tool_call" && e.callId ? outputByCallId.get(e.callId) : undefined}
           />
         ))}
@@ -72,9 +79,11 @@ export function CodexTranscriptView({ entries }: { entries: CodexEntry[] }) {
 function EntryCard({
   entry,
   output,
+  agentLabel,
 }: {
-  entry: CodexEntry;
+  entry: AgentEntry;
   output?: string;
+  agentLabel: string;
 }) {
   if (entry.kind === "user") {
     return (
@@ -90,7 +99,7 @@ function EntryCard({
   if (entry.kind === "agent") {
     return (
       <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
-        <Label text="Codex" className="text-emerald-300" />
+        <Label text={agentLabel} className="text-emerald-300" />
         <div className="mt-1 text-sm text-white/90">
           <Markdown text={entry.text ?? ""} />
         </div>

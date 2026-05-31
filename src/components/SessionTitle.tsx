@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { renameSession, renameCodexSession } from "@/app/actions";
+import {
+  renameSession,
+  renameCodexSession,
+  renameGeminiSession,
+} from "@/app/actions";
 
 export function SessionTitle({
   projectId,
@@ -20,7 +24,7 @@ export function SessionTitle({
   aiTitle?: string | null;
   firstUserPrompt: string | null;
   basePath?: string;
-  kind?: "claude" | "codex";
+  kind?: "claude" | "codex" | "gemini";
 }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(alias ?? "");
@@ -41,6 +45,8 @@ export function SessionTitle({
   const save = (next: string) => {
     start(async () => {
       if (kind === "codex") await renameCodexSession(projectId, sessionId, next);
+      else if (kind === "gemini")
+        await renameGeminiSession(projectId, sessionId, next);
       else await renameSession(projectId, sessionId, next);
       setEditing(false);
       router.refresh();
